@@ -1,7 +1,6 @@
 
 #include <iostream>
 #include "spare_vector.h"
-
 spare_vector::spare_vector() : _size(0), is_single_number(true) {
     data.small = 0;
 }
@@ -33,7 +32,7 @@ void spare_vector::vec_from_number() {
 }
 
 void spare_vector::push_back(uint32_t x) {
-    if (is_single_number && _size < 1) {
+    if ( _size < 1) {
         data.small = x;
         _size++;
         return;
@@ -99,7 +98,6 @@ void spare_vector::clear() {
     }
     _size = 0;
 }
-
 void spare_vector::new_numb() {
     if (is_single_number || data.big.unique()) {
         return;
