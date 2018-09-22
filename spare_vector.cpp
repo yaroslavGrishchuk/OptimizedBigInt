@@ -29,11 +29,7 @@ void spare_vector::vec_from_number() {
     if (!is_single_number)
         return;
     is_single_number = false;
-    uint32_t mas;
-    mas = data.small;
-    vector<uint32_t> *vect = new vector<uint32_t>(_size);
-    new(&data.big) std::shared_ptr<std::vector<uint32_t>>(vect);
-    (*data.big.get())[0] = mas;
+    new(&data.big) std::shared_ptr <std::vector <uint32_t>>(new vector<uint32_t>(_size, data.small));
 }
 
 void spare_vector::push_back(uint32_t x) {
@@ -90,11 +86,6 @@ spare_vector &spare_vector::operator=(spare_vector const &other) {
 
         new(&data.big) std::shared_ptr<vector<uint32_t>>(other.data.big);
 
-//        swap(tmp, data.big);
-//        if (!is_single_number) {
-//            tmp.reset();
-//        }
-
     }
     is_single_number = other.is_single_number;
     return *this;
@@ -113,7 +104,7 @@ void spare_vector::new_numb() {
     if (is_single_number || data.big.unique()) {
         return;
     }
-    data.big = std::make_shared<std::vector<uint32_t >>(*data.big);
+    new(&data.big) std::shared_ptr <std::vector <uint32_t>>(new vector<uint32_t>(*data.big));
 }
 
 spare_vector::~spare_vector() {
