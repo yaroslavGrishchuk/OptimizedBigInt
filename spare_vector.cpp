@@ -36,7 +36,7 @@ void spare_vector::vec_from_number() {
     (*data.big.get())[0] = mas;
 }
 
-void spare_vector::push_back(uint32_t const x) {
+void spare_vector::push_back(uint32_t x) {
     if (is_single_number && _size < 1) {
         data.small = x;
         _size++;
@@ -58,8 +58,7 @@ void spare_vector::pop_back() {
     (*data.big.get()).pop_back();
     if (data.big->size() == 1) {
         uint32_t tmp = data.big->back();
-        //data.big.reset();
-        data.big.~shared_ptr();
+        data.big.reset();
         is_single_number = true;
         data.small = tmp;
     }
@@ -89,8 +88,8 @@ spare_vector &spare_vector::operator=(spare_vector const &other) {
         data.small = other.data.small;
     } else {
 
-        //      shared_ptr<std::vector<uint32_t> > tmp;
         new(&data.big) std::shared_ptr<vector<uint32_t>>(other.data.big);
+
 //        swap(tmp, data.big);
 //        if (!is_single_number) {
 //            tmp.reset();
@@ -105,10 +104,8 @@ void spare_vector::clear() {
     new_numb();
     if (!is_single_number) {
         data.big.reset();
-        data.big.~shared_ptr();
         is_single_number = true;
     }
-    memset(&data.small, 0, 32);
     _size = 0;
 }
 
@@ -122,6 +119,5 @@ void spare_vector::new_numb() {
 spare_vector::~spare_vector() {
     if (!is_single_number) {
         data.big.reset();
-        data.big.~shared_ptr();
     }
 }
