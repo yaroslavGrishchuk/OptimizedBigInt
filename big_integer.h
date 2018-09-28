@@ -4,12 +4,12 @@
 #include <string>
 #include <vector>
 #include "spare_vector.h"
-using std::vector;
+//using std::vector;
 
 class big_integer {
 public:
-    vector<uint32_t > value;
-    //spare_vector value;
+    //vector<uint32_t > value;
+    spare_vector value;
     bool sign;
 
     void clear_pref();

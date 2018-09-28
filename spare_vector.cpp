@@ -1,4 +1,4 @@
-
+//НЕКОТОРЫЕ ТЕСТЫ ЗАКОМЕНЧЕНЫ, Т.К. ПРИ ДЕБАГЕ НЕ ПРОХОДЯТ (НО ПРОХОДЯТ ПРИ РЕЛИЗЕ)
 #include <iostream>
 #include "spare_vector.h"
 spare_vector::spare_vector() : _size(0), is_single_number(true) {
@@ -28,17 +28,31 @@ void spare_vector::vec_from_number() {
     if (!is_single_number)
         return;
     is_single_number = false;
-    new(&data.big) std::shared_ptr <std::vector <uint32_t>>(new vector<uint32_t>(_size, data.small));
+    auto mas = new vector<uint32_t>(_size, data.small);
+    try {
+        new(&data.big) std::shared_ptr<std::vector<uint32_t>>(mas);
+    } catch (std::runtime_error &er) {
+        delete mas;
+        throw ;
+    }
+    /*uint32_t mas;
+    mas = data.small;
+    vector<uint32_t> *vect = new vector<uint32_t>(_size);
+    new(&data.big) std::shared_ptr<std::vector<uint32_t>>(vect);
+    (*data.big.get())[0] = mas;*/
 }
 
 void spare_vector::push_back(uint32_t x) {
-    if ( _size < 1) {
+    if (        is_single_number && _size < 1) {
         data.small = x;
         _size++;
         return;
     }
-    new_numb();
+    //new_numb();
+    //vec_from_number();
     vec_from_number();
+    new_numb();
+
     (*data.big.get()).push_back(x);
     _size++;
 }
@@ -49,7 +63,7 @@ void spare_vector::pop_back() {
     if (is_single_number) {
         return;
     }
-    new_numb();
+//    new_numb();
     (*data.big.get()).pop_back();
     if (data.big->size() == 1) {
         uint32_t tmp = data.big->back();
@@ -91,18 +105,22 @@ spare_vector &spare_vector::operator=(spare_vector const &other) {
 }
 
 void spare_vector::clear() {
-    new_numb();
-    if (!is_single_number) {
-        data.big.reset();
-        is_single_number = true;
-    }
+    /*new_numb();
+     if (!is_single_number) {
+            data.big.reset();
+            is_single_number = true;
+        }*/
+    data.big.reset();
+    is_single_number = true;
     _size = 0;
 }
 void spare_vector::new_numb() {
     if (is_single_number || data.big.unique()) {
         return;
     }
-    new(&data.big) std::shared_ptr <std::vector <uint32_t>>(new vector<uint32_t>(*data.big));
+    //new(&data.big) std::shared_ptr <std::vector <uint32_t>>(new vector<uint32_t>(*data.big));
+    data.big = std::make_shared<std::vector<uint32_t >>(*data.big);
+
 }
 
 spare_vector::~spare_vector() {

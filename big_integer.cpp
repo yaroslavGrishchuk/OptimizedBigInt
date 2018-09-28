@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 
+
 const uint32_t MAX = UINT32_MAX;
 const uint64_t MORE_MAX = uint64_t(MAX) + 1;
 
@@ -95,7 +96,7 @@ big_integer::big_integer(int a)
     }
     else
     {
-        value.push_back((uint32_t) std::abs(a));
+        value.push_back(static_cast<uint32_t>(std::abs(a)));
     }
     sign = (a < 0);
 }
@@ -112,12 +113,7 @@ big_integer::big_integer(const std::string &str)
     clear_pref();
 }
 
-big_integer &big_integer::operator=(const big_integer &other)
-{
-    value = other.value;
-    sign = other.sign;
-    return *this;
-}
+big_integer &big_integer::operator=(const big_integer &other) = default;
 
 big_integer &big_integer::operator+=(const big_integer &rhs)
 {
@@ -133,7 +129,7 @@ big_integer &big_integer::operator+=(const big_integer &rhs)
         first.value[i] = uint32_t(buf);
         carry = buf > MAX;
     }
-    first.sign = (bool) (first.value.back() >> 31);
+    first.sign = static_cast<bool>(first.value.back() >> 31);
     return *this = first.convert_from_add_two();
 }
 
@@ -178,7 +174,7 @@ big_integer &big_integer::operator/=(const big_integer &rhs)
     big_integer remainder(*this);
     big_integer divisor(rhs);
 
-    uint32_t k = uint32_t(MORE_MAX / (uint64_t(divisor.value.back()) + 1));
+    auto k = uint32_t(MORE_MAX / (uint64_t(divisor.value.back()) + 1));
     mul_long_short(remainder, remainder, k);
     mul_long_short(divisor, divisor, k);
 
@@ -236,7 +232,7 @@ bool big_integer::prefix_compare(big_integer const &v, big_integer const &check,
     uint32_t digit;
     for (int i = int(v.length() - 1); i >= len; i--)
     {
-        digit = (i - len < (check.length()) ? check.value[i - len] : 0);
+        digit = (static_cast<uint32_t>(i - len) < static_cast<uint32_t>(check.length()) ? check.value[i - len] : 0);
         if (v.value[i] > digit)
             return true;
         if (v.value[i] < digit)
@@ -275,7 +271,7 @@ big_integer big_integer::bit_op(big_integer const &left, big_integer const &righ
     {
         first.value[i] = f(first.value[i], second.value[i]);
     }
-    first.sign = f(first.sign, second.sign);
+    first.sign = static_cast<bool>(f(static_cast<uint32_t>(first.sign), static_cast<uint32_t>(second.sign)));
     return first.convert_from_add_two();
 }
 
@@ -515,7 +511,7 @@ big_integer big_integer::div_by_ten(uint32_t *ost) const
     uint64_t carry = 0;
     big_integer res;
     res.addition(length());
-    for (int i = length() - 1; i >= 0; i--)
+    for (int i = static_cast<int>(length() - 1); i >= 0; i--)
     {
         uint64_t cur = value[i] + carry * MORE_MAX;
         res.value[i] = uint32_t(cur / 10);
